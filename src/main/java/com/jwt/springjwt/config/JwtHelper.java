@@ -20,7 +20,7 @@ public class JwtHelper {
 
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
     
-    private final String SECRET_KEY = "afafasfafafasfasfasfafacasdasfasxASFACASDFACASDFASFASFDAFASFASDAADSCSDFADCVSGCFVADXCcadwavfsfarvf";
+    private final String SECRET_KEY = "e84f6f5be27953f166b9aac610fc83fef04aace096f60d5d19d969d6eaf9be2f";
 
     public String generateToken(UserDetails userDetails) {
          Map<String, Object> claims = new HashMap<>();
@@ -30,8 +30,8 @@ public class JwtHelper {
     private String doGenerateToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-                .signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
+                .setExpiration(new Date(new Date().getTime() + (1 * 60 * 1000)))  //1 means 1 minute
+                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

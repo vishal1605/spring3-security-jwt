@@ -3,6 +3,7 @@ package com.jwt.springjwt.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -24,7 +25,6 @@ import com.jwt.springjwt.services.StudentDetailsServices;
 
 @Configuration
 @EnableWebSecurity
-// @EnableMethodSecurity
 public class JwtConfig {
 
     @Autowired
@@ -33,27 +33,23 @@ public class JwtConfig {
     @Autowired
     private StudentDetailsServices userDetailsService;
 
-    // @Bean
-    // public UserDetailsService userDetailsService() {
-    //     UserDetails userDetails = User.builder().
-    //             username("Vishal")
-    //             .password(passwordEncoder().encode("9004")).roles("ADMIN").
-    //             build();
-    //     return new InMemoryUserDetailsManager(userDetails);
-    // }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(csrf-> csrf.disable())
-                .cors(cors->cors.disable())
-                .authorizeHttpRequests(a->a.requestMatchers("/api/demo").permitAll().requestMatchers("/api/login-process").permitAll().anyRequest().authenticated())
+        System.out.println("Mai Hu SecurityFilterChain");
+        return http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
+                .authorizeHttpRequests(a -> a.requestMatchers("/api/demo").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/error").permitAll().requestMatchers("/api/login-process")
+                        .permitAll().anyRequest().authenticated())
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
+        System.out.println("Mai Hu AuthenticationProvider");
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -67,7 +63,8 @@ public class JwtConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
+        System.out.println("Mai Hu AuthenticationManager");
         return builder.getAuthenticationManager();
     }
-    
+
 }

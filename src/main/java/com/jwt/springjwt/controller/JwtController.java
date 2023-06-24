@@ -34,10 +34,6 @@ public class JwtController {
 
     @Autowired
     private StudentDetailsServices studentDetailsServices;
-
-
-    @Autowired
-    private StudentTempDb studentTempDb;
     
 
     @PostMapping("/login-process")
@@ -66,17 +62,29 @@ public class JwtController {
         return "Demo";
     }
 
+    @GetMapping("/error")
+    public String error(){
+
+        return "Got an Error";
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<?> procted(Principal principal){
 
-        return new ResponseEntity<>(principal, HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(principal, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+        }
     }
 
     private void doAuthentication(String email, String password){
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
+        System.out.println(authentication);
         try {
             authenticationManager.authenticate(authentication);
         } catch (BadCredentialsException e) {
+            System.out.println(e);
             throw new BadCredentialsException(" Invalid Username or Password  !!");
         }
     }
